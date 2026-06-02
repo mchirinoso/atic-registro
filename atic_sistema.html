@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATIC — Registro de Actividades</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0e1a; --bg2:#111827; --bg3:#1a2236;
+  --accent:#3b82f6; --accent2:#06b6d4;
+  --success:#10b981; --warning:#f59e0b; --danger:#ef4444;
+  --text:#f1f5f9; --text2:#94a3b8; --border:rgba(255,255,255,0.08);
+  --font:'DM Sans',sans-serif; --mono:'Space Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(10,14,26,0.97);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:60px;
+}
+.nav-brand{font-family:var(--mono);font-size:13px;color:var(--accent2);letter-spacing:2px;}
+.nav-brand span{color:var(--text2);}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{
+  padding:6px 18px;border-radius:8px;border:none;cursor:pointer;
+  font-family:var(--font);font-size:13px;font-weight:500;
+  background:transparent;color:var(--text2);transition:all .2s;
+}
+.nav-tab:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+.nav-tab.active{background:var(--accent);color:#fff;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-user{font-size:13px;color:var(--text2);}
+
+/* PAGES */
+.page{display:none;padding:72px 0 0;}
+.page.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO BANNER */
+.hero{
+  background:linear-gradient(135deg,var(--bg2) 0%,var(--bg3) 100%);
+  border-bottom:1px solid var(--border);
+  padding:28px 32px;display:flex;align-items:center;justify-content:space-between;
+}
+.hero-text h1{font-size:22px;font-weight:600;margin-bottom:4px;}
+.hero-text p{color:var(--text2);font-size:13px;}
+.hero-stats{display:flex;gap:24px;}
+.hero-stat{text-align:center;}
+.hero-stat-val{font-family:var(--mono);font-size:22px;color:var(--accent2);}
+.hero-stat-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;}
+
+/* FORM WRAPPER */
+.form-wrapper{
+  max-width:760px;margin:0 auto;padding:28px 32px;
+}
+.form-info{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  padding:16px 20px;margin-bottom:20px;
+  display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text2);
+}
+.form-info-icon{font-size:20px;}
+
+/* IFRAME CONTAINER */
+.iframe-container{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+.iframe-header{
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg3);
+}
+.iframe-header-dot{width:10px;height:10px;border-radius:50%;}
+.iframe-title{font-size:13px;color:var(--text2);margin-left:4px;}
+iframe{
+  width:100%;border:none;display:block;
+  min-height:700px;background:#fff;
+}
+
+/* DASHBOARD */
+.dash-container{max-width:1100px;margin:0 auto;padding:28px 32px;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  padding:20px;position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+}
+.stat-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.stat-value{font-family:var(--mono);font-size:30px;font-weight:700;}
+.stat-sub{font-size:12px;color:var(--success);margin-top:4px;}
+
+/* CHARTS */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;}
+.chart-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:20px;}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px;}
+.bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end;gap:6px;}
+.bar{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--accent),var(--accent2));min-height:4px;}
+.bar-label{font-size:10px;color:var(--text2);white-space:nowrap;}
+.donut-wrap{display:flex;align-items:center;gap:24px;}
+.donut-legend{display:flex;flex-direction:column;gap:10px;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:13px;}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* TABLE */
+.table-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.table-header h3{font-size:14px;font-weight:600;}
+table{width:100%;border-collapse:collapse;}
+thead th{padding:10px 16px;text-align:left;font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);background:var(--bg3);}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(255,255,255,.03);}
+tbody td{padding:12px 16px;font-size:13px;}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge.completado{background:rgba(16,185,129,.15);color:#10b981;}
+.badge.proceso{background:rgba(245,158,11,.15);color:#f59e0b;}
+.badge.pendiente{background:rgba(239,68,68,.15);color:#ef4444;}
+.progress-bar{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-top:4px;}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.link-btn{color:var(--accent2);font-size:12px;text-decoration:none;}
+
+/* BTN */
+.btn{padding:8px 20px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.btn-sm{padding:6px 14px;font-size:12px;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border);}
+
+@media(max-width:640px){
+  nav{padding:0 16px;}
+  .nav-tabs{gap:2px;}
+  .nav-tab{padding:5px 10px;font-size:12px;}
+  .hero{flex-direction:column;gap:16px;padding:20px 16px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .charts-grid{grid-template-columns:1fr;}
+  .form-wrapper,.dash-container{padding:20px 16px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">ATIC<span>/</span>SISTEMA</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('registro')">📋 Registro</button>
+    <button class="nav-tab" onclick="showPage('dashboard')">📊 Dashboard</button>
+  </div>
+  <div class="nav-right">
+    <div class="nav-user" id="nav-fecha"></div>
+  </div>
+</nav>
+
+<!-- REGISTRO -->
+<div class="page active" id="page-registro">
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Registro de Actividades Diarias</h1>
+      <p>Completa el formulario con tus actividades del día y adjunta tu evidencia</p>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-val">10</div>
+        <div class="hero-stat-label">Máx. por día</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val" id="hero-personal">14</div>
+        <div class="hero-stat-label">Personal ATIC</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-wrapper">
+    <div class="form-info">
+      <div class="form-info-icon">ℹ️</div>
+      <div>Completa todos los campos obligatorios. La imagen de evidencia se guardará automáticamente en tu carpeta personal de OneDrive y el registro quedará en el Excel del equipo.</div>
+    </div>
+
+    <div class="iframe-container">
+      <div class="iframe-header">
+        <div class="iframe-header-dot" style="background:#ef4444"></div>
+        <div class="iframe-header-dot" style="background:#f59e0b;margin-left:4px"></div>
+        <div class="iframe-header-dot" style="background:#10b981;margin-left:4px"></div>
+        <div class="iframe-title">Registro de Actividades y Evidencias Diarias — ATIC</div>
+      </div>
+      <iframe
+        src="https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=9g1AO4THF0G-Tj1_xSQkZlGptnY38AJLm6INQjk_XDpUN0hXSkExRzBUOVNYWFkyVTQ4Rk9aSEVJUi4u&embed=true&suppressCookieBanner=true&forceNewSession=true"
+        frameborder="0"
+        marginwidth="0"
+        marginheight="0"
+        style="border:none;width:100%;min-height:900px;background:#fff;"
+        allowfullscreen
+        webkitallowfullscreen
+        mozallowfullscreen
+        msallowfullscreen>
+      </iframe>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Panel de Control</h1>
+      <p>Resumen de actividades del equipo ATIC — datos en tiempo real</p>
+    </div>
+    <div>
+      <button class="btn btn-primary btn-sm" id="btn-login-dash" onclick="loginDashboard()">🔐 Conectar con mi cuenta</button>
+      <button class="btn btn-sm btn-secondary" id="btn-refresh-dash" onclick="cargarDatos()" style="display:none">🔄 Actualizar</button>
+    </div>
+  </div>
+
+  <!-- Login message -->
+  <div id="dash-login-msg" style="max-width:1100px;margin:24px auto;padding:0 32px;">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:32px;text-align:center;">
+      <div style="font-size:40px;margin-bottom:12px">📊</div>
+      <h3 style="margin-bottom:8px">Conecta tu cuenta para ver los datos reales</h3>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:20px">Haz clic en "Conectar con mi cuenta" arriba para iniciar sesión con tu cuenta UNI y cargar los datos del Excel.</p>
+      <button class="btn btn-primary" onclick="loginDashboard()">🔐 Conectar con cuenta UNI</button>
+    </div>
+  </div>
+
+  <div class="dash-container" id="dash-content" style="display:none">
+    <div id="dash-loading" style="text-align:center;padding:40px;display:none">
+      <div style="font-size:32px;margin-bottom:12px">⏳</div>
+      <p style="color:var(--text2)">Cargando datos del Excel...</p>
+    </div>
+
+    <div id="dash-data">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Registros hoy</div>
+          <div class="stat-value" id="stat-hoy">—</div>
+          <div class="stat-sub" id="stat-hoy-sub">Cargando...</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total registros</div>
+          <div class="stat-value" id="stat-total">—</div>
+          <div class="stat-sub">En el Excel</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Completados</div>
+          <div class="stat-value" id="stat-comp">—</div>
+          <div class="stat-sub" id="stat-comp-pct">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avance promedio</div>
+          <div class="stat-value" id="stat-avance">—</div>
+          <div class="stat-sub">Todos los registros</div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">Registros por persona</div>
+          <div class="bar-chart" id="bar-chart"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Estado de actividades</div>
+          <div class="donut-wrap">
+            <canvas id="donut" width="120" height="120"></canvas>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Últimos registros</h3>
+          <a href="https://uniedupe93141-my.sharepoint.com/:x:/g/personal/maria_chirinos_o_uni_edu_pe/IQCuYP9CgItYTLo7yF55AosfAU0Oh3XgE6mOPlZihI8MRD8?e=EFtnNN" target="_blank" class="btn btn-sm btn-secondary">Abrir Excel →</a>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Fecha</th><th>Personal</th><th>Sistema</th><th>Actividad</th><th>Estado</th><th>Avance</th><th>Evidencia</th>
+          </tr></thead>
+          <tbody id="recent-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Config
+const EXCEL_ITEM_ID = '42FF60AE-8B80-4C58-BA3B-C85E79028B1F';
+const TABLE_NAME = 'Tabla2';
+const CLIENT_ID = '6d0eaa86-0146-40dc-89f3-eff3e7a0c14f';
+const REDIRECT_URI = window.location.href.split('?')[0].split('#')[0];
+
+let dashToken = null;
+
+// Fecha actual en nav
+const hoy = new Date();
+document.getElementById('nav-fecha').textContent = hoy.toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'});
+
+// Navegación
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const idx = id==='registro'?0:1;
+  document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+}
+
+// Login Dashboard
+function loginDashboard(){
+  const authUrl = `https://login.microsoftonline.com/3b400df6-c784-4117-be4e-3d7fc5242466/oauth2/v2.0/authorize`
+    + `?client_id=${CLIENT_ID}`
+    + `&response_type=token`
+    + `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`
+    + `&scope=${encodeURIComponent('Files.ReadWrite User.Read offline_access')}`
+    + `&response_mode=fragment`
+    + `&prompt=select_account`
+    + `&state=dashboard`;
+  window.location.href = authUrl;
+}
+
+// Cargar datos reales del Excel
+async function cargarDatos(){
+  document.getElementById('dash-loading').style.display='block';
+  document.getElementById('dash-data').style.display='none';
+  try{
+    const res = await fetch(
+      `https://graph.microsoft.com/v1.0/me/drive/items/${EXCEL_ITEM_ID}/workbook/tables/${TABLE_NAME}/rows`,
+      {headers:{Authorization:'Bearer '+dashToken}}
+    );
+    if(!res.ok) throw new Error('No se pudo leer el Excel');
+    const data = await res.json();
+    const filas = (data.value||[]).map(r=>r.values[0]).filter(r=>r&&r[0]);
+    renderDashboardReal(filas);
+  }catch(e){
+    alert('Error cargando datos: '+e.message);
+  }finally{
+    document.getElementById('dash-loading').style.display='none';
+    document.getElementById('dash-data').style.display='block';
+  }
+}
+
+function renderDashboardReal(filas){
+  // filas: [fecha, locador, sistema, actividad, estado, avance, evidencia, iso, obs]
+  const todayStr = hoy.toISOString().split('T')[0];
+  const hoyReg = filas.filter(r=>{
+    const f = typeof r[0]==='number'
+      ? new Date(Math.round((r[0]-25569)*86400*1000)).toISOString().split('T')[0]
+      : String(r[0]).split('T')[0];
+    return f===todayStr;
+  });
+  const comp = filas.filter(r=>String(r[4]).toLowerCase().includes('complet'));
+  const proc = filas.filter(r=>String(r[4]).toLowerCase().includes('proceso'));
+  const pend = filas.filter(r=>String(r[4]).toLowerCase().includes('pendiente'));
+  const avances = filas.map(r=>parseFloat(r[5])||0);
+  const avg = avances.length?Math.round(avances.reduce((a,b)=>a+b,0)/avances.length):0;
+
+  document.getElementById('stat-hoy').textContent = hoyReg.length;
+  document.getElementById('stat-hoy-sub').textContent = '↑ Registros de hoy';
+  document.getElementById('stat-total').textContent = filas.length;
+  document.getElementById('stat-comp').textContent = comp.length;
+  document.getElementById('stat-comp-pct').textContent = filas.length?Math.round(comp.length/filas.length*100)+'% del total':'—';
+  document.getElementById('stat-avance').textContent = avg+'%';
+
+  // Bar chart por persona
+  const counts = {};
+  filas.forEach(r=>{ const n=String(r[1]); counts[n]=(counts[n]||0)+1; });
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxC = Math.max(...top.map(t=>t[1]),1);
+  document.getElementById('bar-chart').innerHTML = top.map(([name,cnt])=>`
+    <div class="bar-wrap">
+      <div class="bar" style="height:${Math.max(4,cnt/maxC*100)}px"></div>
+      <div class="bar-label">${name.split(' ')[0]}</div>
+    </div>`).join('');
+
+  // Donut
+  const eCount = {Completado:comp.length,'En proceso':proc.length,Pendiente:pend.length};
+  const colors = {Completado:'#10b981','En proceso':'#f59e0b',Pendiente:'#ef4444'};
+  const canvas = document.getElementById('donut');
+  const ctx = canvas.getContext('2d');
+  const total = Object.values(eCount).reduce((a,b)=>a+b,0)||1;
+  let start = -Math.PI/2;
+  ctx.clearRect(0,0,120,120);
+  Object.entries(eCount).forEach(([k,v])=>{
+    const angle=(v/total)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(60,60);
+    ctx.arc(60,60,50,start,start+angle);
+    ctx.closePath();ctx.fillStyle=colors[k];ctx.fill();
+    start+=angle;
+  });
+  ctx.beginPath();ctx.arc(60,60,30,0,Math.PI*2);ctx.fillStyle='#111827';ctx.fill();
+  document.getElementById('donut-legend').innerHTML = Object.entries(eCount).map(([k,v])=>
+    `<div class="legend-item"><div class="legend-dot" style="background:${colors[k]}"></div><span>${k}: <strong>${v}</strong></span></div>`
+  ).join('');
+
+  // Tabla últimos 10
+  const ultimos = [...filas].reverse().slice(0,10);
+  document.getElementById('recent-tbody').innerHTML = ultimos.map(r=>{
+    const estado = String(r[4]);
+    const avance = parseFloat(r[5])||0;
+    const cls = estado.toLowerCase().includes('complet')?'completado':estado.toLowerCase().includes('proceso')?'proceso':'pendiente';
+    const evidencia = r[6]?`<a href="${r[6]}" target="_blank" class="link-btn">📎 Ver</a>`:'—';
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:11px">${String(r[0]).split('T')[0]}</td>
+      <td>${r[1]}</td>
+      <td>${r[2]}</td>
+      <td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r[3]}</td>
+      <td><span class="badge ${cls}">${estado}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-family:var(--mono);font-size:11px">${avance}%</span>
+          <div class="progress-bar" style="width:44px"><div class="progress-fill" style="width:${avance}%"></div></div>
+        </div>
+      </td>
+      <td>${evidencia}</td>
+    </tr>`;
+  }).join('');
+}
+
+// Verificar token en URL al regresar del login
+(function(){
+  const hash = window.location.hash;
+  if(hash && hash.includes('access_token')){
+    const params = new URLSearchParams(hash.substring(1));
+    const token = params.get('access_token');
+    const state = params.get('state');
+    history.replaceState(null,'',window.location.pathname);
+    if(token && state==='dashboard'){
+      dashToken = token;
+      document.getElementById('dash-login-msg').style.display='none';
+      document.getElementById('dash-content').style.display='block';
+      document.getElementById('btn-login-dash').style.display='none';
+      document.getElementById('btn-refresh-dash').style.display='inline-flex';
+      showPage('dashboard');
+      cargarDatos();
+    }
+  }
+})();
+</script>
+</body>
+</html>
